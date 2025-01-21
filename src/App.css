@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Inter Regular';
+  src: local('Inter Regular'), url(./fonts/Inter/Inter-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'InterDisplay Regular';
+  src: local('InterDisplay Regular'), url(./fonts/Inter/InterDisplay-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter Medium';
+  src: local('Inter Medium'), url(./fonts/Inter/Inter-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'InterDisplay Medium';
+  src: local('InterDisplay Medium'), url(./fonts/Inter/InterDisplay-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter Bold';
+  src: local('Inter Bold'), url(./fonts/Inter/Inter-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter SemiBoldItalic';
+  src: local('Inter SemiBoldItalic'), url(./fonts/Inter/Inter-SemiBoldItalic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: local('Roboto Mono'), url(./fonts/Roboto/RobotoMono.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'DM Serif Regular';
+  src: local('DM Serif Regular'), url(./fonts/DM/DMSerifText-Regular.ttf) format('truetype');
+}
+
