@@ -16,14 +16,14 @@ export default function Login(props) {
 
   useEffect(() => {
     if (auth.user) {
-      navigate('/campaigns');
+      navigate('/appointments');
     }
     window.scrollTo(0,0);
   }, [auth]);
 
   const handleGoogleLogin = () => {
     if (auth.googleLogin()) {
-      navigate('/campaigns');
+      navigate('/appointments');
     } else {
       toast.error("Something went wrong. Please try again.");
     }

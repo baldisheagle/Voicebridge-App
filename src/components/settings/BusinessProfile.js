@@ -4,9 +4,9 @@ import { useRequireAuth } from '../../use-require-auth.js';
 import { useMediaQuery } from '../../shared-functions.js';
 import { Col, Row } from 'react-bootstrap';
 import { ThemeContext } from "../../Theme.js";
-import { Button, Spinner, Text, TextField, TextArea, Select, Switch } from '@radix-ui/themes';
+import { Button, Spinner, Text, TextField, TextArea, Select, Switch, Badge } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
-import { TIMEZONES, HOURS } from '../../config/lists.js';
+import { TIMEZONE_OFFSETS, HOURS } from '../../config/lists.js';
 import { dbUpdateWorkspace } from '../../utilities/database.js';
 
 export default function BusinessProfile() {
@@ -93,7 +93,7 @@ export default function BusinessProfile() {
 
       {/* Name */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Name</Text>
           <Text size="1" as='div' color='gray'>The name of your business.</Text>
         </Col>
@@ -104,7 +104,7 @@ export default function BusinessProfile() {
 
       {/* Description */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>About</Text>
           <Text size="1" as='div' color='gray'>A short description of your business.</Text>
         </Col>
@@ -115,7 +115,7 @@ export default function BusinessProfile() {
 
       {/* Website */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Website</Text>
           <Text size="1" as='div' color='gray'>The website of your business.</Text>
         </Col>
@@ -126,7 +126,7 @@ export default function BusinessProfile() {
 
       {/* Location */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Location</Text>
           <Text size="1" as='div' color='gray'>The location of your business.</Text>
         </Col>
@@ -137,7 +137,7 @@ export default function BusinessProfile() {
 
       {/* Phone number */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Phone number</Text>
           <Text size="1" as='div' color='gray'>The phone number of your business.</Text>
         </Col>
@@ -148,7 +148,7 @@ export default function BusinessProfile() {
 
       {/* Timezone */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Timezone</Text>
           <Text size="1" as='div' color='gray'>The timezone of your business.</Text>
         </Col>
@@ -156,7 +156,7 @@ export default function BusinessProfile() {
           <Select.Root variant="outline" value={timezone} onValueChange={(value) => setTimezone(value)}>
             <Select.Trigger placeholder="Select a timezone" />
             <Select.Content>
-              {TIMEZONES.map((option) => (
+              {TIMEZONE_OFFSETS.map((option) => (
                 <Select.Item key={option.value} value={option.value}>{option.label}</Select.Item>
               ))}
             </Select.Content>
@@ -166,7 +166,7 @@ export default function BusinessProfile() {
 
       {/* Business hours */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)' }}>Business hours</Text>
           <Text size="1" as='div' color='gray'>The business hours of your business.</Text>
         </Col>
@@ -175,8 +175,8 @@ export default function BusinessProfile() {
             <div key={day} style={{ marginBottom: 15 }}>
               <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 5 }}>
                 <Text size="2" weight="bold" as='div' style={{ color: 'var(--gray-11)', marginRight: 10 }}>{day.charAt(0).toUpperCase() + day.slice(1)}</Text>
-                <Switch variant="outline" size="1" checked={businessHours[day].isOpen} onCheckedChange={(checked) => setBusinessHours({ ...businessHours, [day]: { ...businessHours[day], isOpen: checked } })} />
-                {/* <Text size="1" weight="medium" as='div' style={{ color: 'var(--gray-11)', marginLeft: 10 }}>{businessHours[day].isOpen ? 'Open' : 'Closed'}</Text> */}
+                {/* <Switch variant="outline" size="1" checked={businessHours[day].isOpen} onCheckedChange={(checked) => setBusinessHours({ ...businessHours, [day]: { ...businessHours[day], isOpen: checked } })} /> */}
+                <Badge size="1" weight="medium" as='div' style={{ cursor: 'pointer' }} color={businessHours[day].isOpen ? 'green' : 'gray'} onClick={() => setBusinessHours({ ...businessHours, [day]: { ...businessHours[day], isOpen: !businessHours[day].isOpen } })}>{businessHours[day].isOpen ? 'Open' : 'Closed'}</Badge>
               </Row>
 
               <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 5 }}>
@@ -208,7 +208,7 @@ export default function BusinessProfile() {
 
       {/* Save button */}
       <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 40 }}>
-        <Col xs={12} sm={12} md={6} lg={4} xl={4} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
+        <Col xs={12} sm={12} md={6} lg={4} xl={3} style={{ padding: 0, paddingLeft: 10, paddingRight: 10, paddingBottom: 5 }}>
           <Button variant="solid" onClick={saveBusinessProfile}>Save changes</Button>
         </Col>
       </Row>

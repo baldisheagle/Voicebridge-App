@@ -4,13 +4,15 @@ import { useRequireAuth } from './use-require-auth.js';
 import { useMediaQuery } from './shared-functions.js';
 import { Col, Row } from 'react-bootstrap';
 import { ThemeContext } from "./Theme.js";
-import { Button, Heading, Spinner, Text, TextField, VisuallyHidden, Dialog, Switch, Card, AlertDialog, Select, Table, Link } from '@radix-ui/themes';
+import { Button, Heading, Spinner, Text, TextField, VisuallyHidden, Dialog, Switch, Card, AlertDialog, Select, Table, Link, Badge } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
 import { Circle, Pencil, Plus, Trash } from '@phosphor-icons/react';
 import { AGENTS } from './config/agents.js';
 import { v4 as uuidv4 } from 'uuid';
 import { dbGetCampaigns, dbCreateCampaign, dbUpdateCampaign, dbDeleteCampaign, dbGetCalendars } from './utilities/database.js';
 import Moment from 'react-moment';
+import { DEFAULT_PHONE_NUMBERS } from './config/lists.js';
+import { formatPhoneNumber } from './helpers/string.js';
 
 export default function Campaigns() {
 
@@ -22,6 +24,7 @@ export default function Campaigns() {
 
   const [campaigns, setCampaigns] = useState([]);
   const [calendars, setCalendars] = useState([]);
+  const [phoneNumbers, setPhoneNumbers] = useState(DEFAULT_PHONE_NUMBERS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,33 +51,6 @@ export default function Campaigns() {
     });
   }
 
-  // Toggle campaign enabled
-  const toggleCampaignEnabled = (campaignId, enabled) => {
-    const campaign = campaigns.find((campaign) => campaign.id === campaignId);
-    // Check if phone number is set
-    // if (!campaign.phoneNumber && enabled) {
-    //   toast.error('Set a phone number before setting live');
-    //   return;
-    // }
-    // Check if calendar is set
-    if (!campaign.calendarId && enabled) {
-      toast.error('Set a calendar before setting live');
-      return;
-    }
-    const _campaign = {
-      ...campaign,
-      enabled: enabled,
-      updatedAt: new Date(),
-    }
-    dbUpdateCampaign(campaignId, auth.workspace.id, _campaign).then((success) => {
-      setCampaigns(campaigns.map((campaign) => campaign.id === campaignId ? _campaign : campaign));
-      toast.success("Campaign updated");
-    }).catch((error) => {
-      console.error("Error updating campaign:", error);
-      toast.error("Error updating campaign, please try again");
-    });
-  }
-
   // Create new campaign
   const createNewCampaign = () => {
     let id = uuidv4();
@@ -82,11 +58,11 @@ export default function Campaigns() {
       id: id,
       name: '3-day reminder',
       agentId: 1,
-      daysInAdvance: AGENTS[0].attributes.find(attr => attr.name === 'daysInAdvance').default,
-      timeOfDay: AGENTS[0].attributes.find(attr => attr.name === 'timeOfDay').default,
-      timezone: AGENTS[0].attributes.find(attr => attr.name === 'timezone').default,
+      hoursInAdvance: AGENTS[0].attributes.find(attr => attr.name === 'hoursInAdvance').default,
+      // timeOfDay: AGENTS[0].attributes.find(attr => attr.name === 'timeOfDay').default,
+      // timezone: AGENTS[0].attributes.find(attr => attr.name === 'timezone').default,
       language: AGENTS[0].attributes.find(attr => attr.name === 'language').default,
-      phoneNumber: '',
+      phoneNumber: DEFAULT_PHONE_NUMBERS[0].id,
       calendarId: '',
       enabled: false,
       workspaceId: auth.workspace.id,
@@ -137,7 +113,33 @@ export default function Campaigns() {
             </Text>
           </Col>
           <Col style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="solid" size="2" onClick={() => createNewCampaign()}><Plus /> New campaign</Button>
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <Button variant="solid" size="2"><Plus /> New campaign</Button>
+              </Dialog.Trigger>
+              <Dialog.Content style={{ width: '100%' }}>
+                <Dialog.Title style={{ marginBottom: 0 }}>New campaign</Dialog.Title>
+                <Dialog.Description size="2">Select an agent to run the new campaign</Dialog.Description>
+                <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+                  {AGENTS.length > 0 && AGENTS.map((agent, index) => (
+                    <Col key={index} xs={12} sm={12} md={12} lg={6} xl={6} style={{ padding: 5 }}>
+                      <Card>
+                        {agent.icon}
+                        <Heading size="3" as='div' color='gray' style={{ marginTop: 10, marginBottom: 2 }}>{agent.name}</Heading>
+                        <Badge size="1" style={{ color: 'var(--gray-11)' }}>{agent.mode}</Badge>
+                        <Text size="1" as='div' color='gray' style={{ marginTop: 5 }}>{agent.description}</Text>
+                        <Button variant="solid" size="2" style={{ marginTop: 20 }} onClick={() => createNewCampaign(agent.id)} disabled={!agent.enabled}>Select</Button>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+                <Row style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
+                  <Dialog.Close>
+                    <Button variant="soft" color="gray">Cancel</Button>
+                  </Dialog.Close>
+                </Row>
+              </Dialog.Content>
+            </Dialog.Root>
           </Col>
         </Row>
 
@@ -147,10 +149,12 @@ export default function Campaigns() {
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Agent</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Phone number</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Calendar</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Actions</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Action</Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
 
@@ -159,44 +163,53 @@ export default function Campaigns() {
               {campaigns.map((campaign, index) => (
                 <Table.Row key={index}>
                   <Table.Cell>
-                    <Text size="3" weight="medium" as='div'><Link style={{ cursor: 'pointer' }} onClick={() => navigate(`/campaign/${campaign.id}`)}>{campaign.name}</Link></Text>
-                    <Text size="1" as='div' color='gray'>{AGENTS[campaign.agentId - 1].name}</Text>
+                    <Link style={{ cursor: 'pointer' }} onClick={() => navigate(`/campaign/${campaign.id}`)}>{campaign.name}</Link>
                   </Table.Cell>
-                  <Table.Cell>{campaign.calendarId ? calendars.find((calendar) => calendar.id === campaign.calendarId)?.name || 'Not set' : 'Not set'}</Table.Cell>
+                  <Table.Cell>
+                    <Text size="2" color="gray">{AGENTS[campaign.agentId - 1].name}</Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {phoneNumbers.find((phoneNumber) => phoneNumber.id === campaign.phoneNumber)?.phoneNumber ? 
+                      <Text size="2" color="var(--accent-9)">{formatPhoneNumber(phoneNumbers.find((phoneNumber) => phoneNumber.id === campaign.phoneNumber)?.phoneNumber, 'US')}</Text>
+                    : 
+                      <Text size="2" color="gray">Not set</Text>
+                    }
+                  </Table.Cell>
+                  <Table.Cell>
+                    {campaign.calendarId ? calendars.find((calendar) => calendar.id === campaign.calendarId)?.name || 'Not set' : 'Not set'}
+                    </Table.Cell>
                   <Table.Cell><Moment format="DD MMM YYYY">{campaign.createdAt.toDate()}</Moment></Table.Cell>
                   <Table.Cell>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: campaign.enabled ? 'var(--green-3)' : 'var(--gray-3)', padding: '4px 10px', borderRadius: '9999px', marginLeft: 10 }}>
-                      <Circle weight='fill' size={12} color={campaign.enabled ? 'var(--green-9)' : 'var(--gray-6)'} />
-                      { isPageWide &&
-                      <Text size="1" style={{ color: campaign.enabled ? 'var(--green-11)' : 'var(--gray-11)', marginLeft: 5 }}>{campaign.enabled ? 'Live' : 'Not running'}</Text> }
-                    </div>
+                    {campaign.enabled ? <Badge size="2" color="green"><Circle weight='fill' size={10} color={'var(--green-9)'} />Live</Badge> : <Badge size="2" color="gray"><Circle weight='fill' size={10} color={'var(--gray-9)'} />Paused</Badge>}
                   </Table.Cell>
                   <Table.Cell>
-                    <Button variant="ghost" size="3" style={{ marginRight: 5 }} onClick={() => navigate(`/campaign/${campaign.id}`)}><Pencil /></Button>
-                    <AlertDialog.Root>
-                      <AlertDialog.Trigger>
-                        <Button variant="ghost" size="3" color="red"><Trash /></Button>
-                      </AlertDialog.Trigger>
-                      <AlertDialog.Content maxWidth="450px">
-                        <AlertDialog.Title>Delete {campaign.name}</AlertDialog.Title>
-                        <AlertDialog.Description size="2">
-                          Are you sure you want to delete this campaign?
-                        </AlertDialog.Description>
+                    <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginLeft: 0, marginRight: 0, minWidth: 60 }}>
+                      <Button variant="ghost" size="3" style={{ marginRight: 5 }} onClick={() => navigate(`/campaign/${campaign.id}`)}><Pencil /></Button>
+                      <AlertDialog.Root>
+                        <AlertDialog.Trigger>
+                          <Button variant="ghost" size="3" color="red"><Trash /></Button>
+                        </AlertDialog.Trigger>
+                        <AlertDialog.Content maxWidth="450px">
+                          <AlertDialog.Title>Delete {campaign.name}</AlertDialog.Title>
+                          <AlertDialog.Description size="2">
+                            Are you sure you want to delete this campaign?
+                          </AlertDialog.Description>
 
-                        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
-                          <AlertDialog.Cancel>
-                            <Button variant="soft" color="gray">
-                              Cancel
-                            </Button>
-                          </AlertDialog.Cancel>
-                          <AlertDialog.Action>
-                            <Button variant="solid" color="red" onClick={() => deleteCampaign(campaign.id)}>
-                              Delete
-                            </Button>
-                          </AlertDialog.Action>
-                        </Row>
-                      </AlertDialog.Content>
-                    </AlertDialog.Root>
+                          <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+                            <AlertDialog.Cancel>
+                              <Button variant="soft" color="gray">
+                                Cancel
+                              </Button>
+                            </AlertDialog.Cancel>
+                            <AlertDialog.Action>
+                              <Button variant="solid" color="red" onClick={() => deleteCampaign(campaign.id)}>
+                                Delete
+                              </Button>
+                            </AlertDialog.Action>
+                          </Row>
+                        </AlertDialog.Content>
+                      </AlertDialog.Root>
+                    </Row>
                   </Table.Cell>
                 </Table.Row>
               ))}

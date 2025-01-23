@@ -93,3 +93,15 @@ export function formatBytes(bytes, decimals = 2) {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+export function formatPhoneNumber(phoneNumber, countryCode = 'US') {
+  if (countryCode === 'US') {
+    // Remove +1 prefix if present
+    if (phoneNumber.startsWith('+1')) {
+      phoneNumber = phoneNumber.slice(-10);
+    }
+    return phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+  } else {
+    return phoneNumber;
+  }
+}

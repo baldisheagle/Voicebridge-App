@@ -1,6 +1,6 @@
 // Firebase
 import { db } from '../use-firebase.js';
-import { collection, query, where, getDocs, addDoc, setDoc, limit, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, setDoc, limit, deleteDoc, doc, getDoc } from 'firebase/firestore';
 
 // Update workspace
 export const dbUpdateWorkspace = async(workspaceId, _workspace) => {
@@ -25,6 +25,33 @@ export const dbGetAppointments = async(workspaceId) => {
   } catch (error) {
     console.error("Error fetching appointments:", error);
     return [];
+  }
+}
+
+// Create appointment
+export const dbCreateAppointment = async(appointment) => {
+  try {
+    const docRef = await addDoc(collection(db, "appointments"), appointment);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating appointment:", error);
+    return null;
+  }
+}
+
+// Update appointment
+export const dbUpdateAppointment = async(appointment) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "appointments"), where("id", "==", appointment.id), where("workspaceId", "==", appointment.workspaceId), limit(1)));
+    if (!snapshot.empty) {
+      const docRef = snapshot.docs[0].ref;
+      await setDoc(docRef, appointment);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error updating appointment:", error);
+    return false;
   }
 }
 
@@ -151,6 +178,108 @@ export const dbDeleteCalendar = async(calendarId, workspaceId) => {
     return true;
   } catch (error) {
     console.error("Error deleting calendar:", error);
+    return false;
+  }
+}
+
+// Update calendar name
+export const dbUpdateCalendarName = async(calendarId, name, workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "calendars"), where("id", "==", calendarId), where("workspaceId", "==", workspaceId), limit(1)));
+    if (snapshot.empty) {
+      return false;
+    }
+    const docRef = snapshot.docs[0].ref;
+    await setDoc(docRef, { name: name }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error("Error updating calendar name:", error);
+    return false;
+  }
+}
+
+// Get logs
+export const dbGetLogs = async(workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "logs"), where("workspaceId", "==", workspaceId)));
+    const _logs = snapshot.docs.map((doc) => doc.data());
+    return _logs;
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    return [];
+  }
+}
+
+// Get tasks
+export const dbGetTasks = async(workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "tasks"), where("workspaceId", "==", workspaceId)));
+    const _tasks = snapshot.docs.map((doc) => doc.data());
+    return _tasks;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    return [];
+  }
+}
+
+// Get tasks by appointment id
+export const dbGetTasksByAppointmentId = async(appointmentId, workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "tasks"), where("appointmentId", "==", appointmentId), where("workspaceId", "==", workspaceId)));
+    const _tasks = snapshot.docs.map((doc) => doc.data());
+    return _tasks;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    return [];
+  }
+}
+
+// Create task
+export const dbCreateTask = async(task) => {
+  try {
+    const docRef = await addDoc(collection(db, "tasks"), task);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating task:", error);
+    return null;
+  }
+}
+
+// Get agents
+export const dbGetAgents = async(workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "agents"), where("workspaceId", "==", workspaceId)));
+    const _agents = snapshot.docs.map((doc) => doc.data());
+    return _agents;
+  } catch (error) {
+    console.error("Error fetching agents:", error);
+    return [];
+  }
+}
+
+// Create agent
+export const dbCreateAgent = async(agent) => {
+  try {
+    const docRef = await addDoc(collection(db, "agents"), agent);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating agent:", error);
+    return null;
+  }
+}
+
+// Update agent
+export const dbUpdateAgent = async(agent) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "agents"), where("id", "==", agent.id), where("workspaceId", "==", agent.workspaceId), limit(1)));
+    if (snapshot.empty) {
+      return false;
+    }
+    const docRef = snapshot.docs[0].ref;
+    await setDoc(docRef, agent);
+    return true;
+  } catch (error) {
+    console.error("Error updating agent:", error);
     return false;
   }
 }

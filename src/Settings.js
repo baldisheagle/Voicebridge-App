@@ -6,8 +6,8 @@ import { Col, Row } from 'react-bootstrap';
 import { ThemeContext } from "./Theme.js";
 import { Heading, Spinner, TabNav, Text } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
-// import PhoneNumbers from './components/settings/PhoneNumbers.js';
-import Calendars from './components/settings/Calendars.js';
+import PhoneNumbers from './components/settings/PhoneNumbers.js';
+// import Calendars from './components/settings/Calendars.js';
 import Billing from './components/settings/Billing.js';
 import BusinessProfile from './components/settings/BusinessProfile.js';
 
@@ -52,14 +52,14 @@ export default function Settings() {
       <div style={{ width: '100%', marginTop: 10 }}>
         <TabNav.Root>
           <TabNav.Link href="#" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')}>
-            Business
+            Business Profile
           </TabNav.Link>
-          {/* <TabNav.Link href="#" active={activeTab === 'phoneNumbers'} onClick={() => setActiveTab('phoneNumbers')}>
+          <TabNav.Link href="#" active={activeTab === 'phoneNumbers'} onClick={() => setActiveTab('phoneNumbers')}>
             Phone numbers
-          </TabNav.Link> */}
-          <TabNav.Link href="#" active={activeTab === 'calendars'} onClick={() => setActiveTab('calendars')}>
-            Calendars
           </TabNav.Link>
+          {/* <TabNav.Link href="#" active={activeTab === 'calendars'} onClick={() => setActiveTab('calendars')}>
+            Calendars
+          </TabNav.Link> */}
           <TabNav.Link href="#" active={activeTab === 'billing'} onClick={() => setActiveTab('billing')}>
             Billing
           </TabNav.Link>
@@ -71,12 +71,12 @@ export default function Settings() {
         {activeTab === 'profile' && (
           <BusinessProfile />
         )}
-        {/* {activeTab === 'phoneNumbers' && (
+        {activeTab === 'phoneNumbers' && (
           <PhoneNumbers />
-        )} */}
-        {activeTab === 'calendars' && (
-          <Calendars />
         )}
+        {/* {activeTab === 'calendars' && (
+          <Calendars />
+        )} */}
         {activeTab === 'billing' && (
           <Billing />
         )}

@@ -3,9 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Col } from 'react-bootstrap';
 import Logo from "./Logo.js";
 import { useMediaQuery } from "../../helpers/dom.js";
-// import { useRequireAuth } from "../../use-require-auth.js";
 import { Sidebar, Menu, MenuItem, menuClasses } from 'react-pro-sidebar';
-import { Gear, Calendar, Phone, Users, Link, Megaphone } from "@phosphor-icons/react";
+import { Gear, Calendar, Users, Link, Play  } from "@phosphor-icons/react";
 
 export default function SidebarComponent(props) {
 
@@ -24,7 +23,7 @@ export default function SidebarComponent(props) {
     <Col xs="auto" style={{ position: 'fixed', left: 0, padding: 0, marginTop: 0, height: '100%', overflow: 'hidden', borderRight: '1px solid var(--gray-6)' }}> 
       
       <div style={{ width: '100%', padding: 0, marginTop: 10, textAlign: 'left', paddingLeft: 12, cursor: 'pointer' }}  onClick={() => navigate('/')}>
-        { isPageWide ? <Logo width={140} type="logo" /> :  <Logo width={22} type="icon" /> }
+        { isPageWide ? <Logo width={140} type="logo" /> :  <Logo width={18} type="icon" /> }
       </div>
 
       {/* <div style={{ width: '100%', padding: 0, marginTop: 10, textAlign: 'left', paddingLeft: 0 }}>
@@ -65,7 +64,7 @@ export default function SidebarComponent(props) {
 
       <Sidebar 
           collapsed={isPageWide ? false : true}
-          width="220px"
+          width="200px"
           collapsedWidth="45px" 
           backgroundColor="transparent"
           rootStyles={{
@@ -102,19 +101,43 @@ export default function SidebarComponent(props) {
               }}
               >
 
-              {/* <MenuItem 
+              <MenuItem 
                 label="Appointments"
-                active={location.pathname === '/campaigns' ? true : false} 
+                active={location.pathname === '/appointments' ? true : false} 
                 icon={<Calendar size={15} weight="bold" />}
                 rootStyles={{
                   ['.' + menuClasses.button]: {
                     marginBottom: '0px',
                   },
                 }}
-                onClick={() => navigate("/campaigns")}>Appointments
-              </MenuItem> */}
+                onClick={() => navigate("/appointments")}>Appointments
+              </MenuItem>
 
               <MenuItem 
+                label="Tasks"
+                active={location.pathname === '/tasks' ? true : false} 
+                icon={<Play size={15} weight="bold" />}
+                rootStyles={{
+                  ['.' + menuClasses.button]: {
+                    marginBottom: '0px',
+                  },
+                }}
+                onClick={() => navigate("/tasks")}>Tasks
+              </MenuItem>
+
+              <MenuItem 
+                label="Agents"
+                active={location.pathname === '/agents' ? true : false} 
+                icon={<Users size={15} weight="bold" />}
+                rootStyles={{
+                  ['.' + menuClasses.button]: {
+                    marginBottom: '0px',
+                  },
+                }}
+                onClick={() => navigate("/agents")}>Agents
+              </MenuItem>
+
+              {/* <MenuItem 
                 label="Campaigns"
                 active={location.pathname === '/campaigns' ? true : false} 
                 icon={<Megaphone size={15} weight="bold" />}
@@ -124,19 +147,19 @@ export default function SidebarComponent(props) {
                   },
                 }}
                 onClick={() => navigate("/campaigns")}>Campaigns
-              </MenuItem>
+              </MenuItem> */}
 
-              <MenuItem 
-                label="Call logs"
+              {/* <MenuItem 
+                label="Logs"
                 active={location.pathname === '/logs' ? true : false} 
-                icon={<Phone size={15} weight="bold" />}
+                icon={<List size={15} weight="bold" />}
                 rootStyles={{
                   ['.' + menuClasses.button]: {
                     marginBottom: '0px',
                   },
                 }}
                 onClick={() => navigate("/logs")}>Logs
-              </MenuItem>
+              </MenuItem> */}
 
               <MenuItem 
                 label="Team"
@@ -150,7 +173,7 @@ export default function SidebarComponent(props) {
                 onClick={() => navigate("/team")}>Team
               </MenuItem>
 
-              {/* <MenuItem 
+              <MenuItem 
                 label="Integrations"
                 active={location.pathname === '/integrations' ? true : false} 
                 icon={<Link size={15} weight="bold" />}
@@ -160,7 +183,7 @@ export default function SidebarComponent(props) {
                   },
                 }}
                 onClick={() => navigate("/integrations")}>Integrations
-              </MenuItem> */}
+              </MenuItem>
 
               <MenuItem 
                 label="Settings"

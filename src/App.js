@@ -17,10 +17,12 @@ import Login from "./Login.js";
 import NotFound from "./NotFound.js";
 import Campaigns from "./Campaigns.js";
 import Campaign from "./Campaign.js";
-import Logs from "./Logs.js";
+import Tasks from "./Tasks.js";
+import Agents from "./Agents.js";
 import Team from "./Team.js";
 import Settings from './Settings.js';
-// import Integrations from './Integrations.js';
+import Appointments from './Appointments.js';
+import Integrations from './Integrations.js';
 import Profile from './components/common/Profile.js';
 import SidebarComponent from './components/common/Sidebar.js';
 import CalendlyConnect from './pages/integrations/CalendlyConnect.js';
@@ -40,14 +42,17 @@ export default function App() {
             <Row style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', marginTop: 0, marginLeft: 0, marginRight: 0 }}>
               <SidebarComponent />
               <Profile />
-              <Col style={{ width: '100%', padding: 0, marginTop: 0, marginLeft: isPageWide ? 220 : 45, minHeight: '100vh' }}>
+              <Col style={{ width: `calc(100% - ${isPageWide ? 200 : 45}px)`, padding: 0, marginTop: 0, marginLeft: isPageWide ? 200 : 45, minHeight: '100vh' }}>
                 <Routes>
                   {/* Main */}
+                  <Route path="/appointments" element={<Appointments />} />
+                  <Route path="/agents" element={<Agents />} />
                   <Route path="/campaigns" element={<Campaigns />} />
                   <Route path="/campaign/:campaignId" element={<Campaign />} />
-                  <Route path="/logs" element={<Logs />} />
+                  {/* <Route path="/logs" element={<Logs />} /> */}
                   <Route path="/team" element={<Team />} />
-                  {/* <Route path="/integrations" element={<Integrations />} /> */}
+                  <Route path="/tasks" element={<Tasks />} />
+                  <Route path="/integrations" element={<Integrations />} />
                   {/* Settings */}
                   <Route path="/settings" element={<Settings />} />
                   {/* Calendly */}
