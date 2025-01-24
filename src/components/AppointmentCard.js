@@ -73,7 +73,7 @@ const AppointmentCard = ({
                 backgroundColor: 'transparent',
                 border: '1px solid var(--gray-6)',
                 borderRadius: '8px',
-                padding: 10,
+                padding: 15,
                 marginBottom: 10,
                 transition: 'all 0.2s ease-in-out',
                 '&:hover': {
@@ -113,7 +113,7 @@ const AppointmentCard = ({
                         {editable &&
                             <Dialog.Root>
                                 <Dialog.Trigger>
-                                    <Button variant="soft" size="1" color="gray" style={{ marginRight: 5 }}><Pencil /> Edit</Button>
+                                    <Button variant="solid" size="1" style={{ marginRight: 5 }}><Pencil /> Edit</Button>
                                 </Dialog.Trigger>
                                 <Dialog.Content style={{ maxWidth: '450px' }}>
 
@@ -162,7 +162,7 @@ const AppointmentCard = ({
                         {editable &&
                             <Dialog.Root open={newTaskDialogOpen} onOpenChange={setNewTaskDialogOpen}>
                                 <Dialog.Trigger>
-                                    <Button variant="soft" size="1" color="gray" style={{ marginRight: 5 }}><Play /> New task</Button>
+                                    <Button variant="solid" size="1" style={{ marginRight: 5 }}><Play /> New task</Button>
                                 </Dialog.Trigger>
                                 <Dialog.Content style={{ maxWidth: '450px' }}>
                                     <Dialog.Title>New task</Dialog.Title>
@@ -178,7 +178,7 @@ const AppointmentCard = ({
 
                                     {/* Appointment type */}
                                     <Text size="1" as='div' weight="bold" color='gray' style={{ marginTop: 20 }}>Appointment type</Text>
-                                    <Text size="2" as='div' weight="medium" color='gray' style={{ marginTop: 5 }}>{APPOINTMENT_TYPES.find(type => type.value === type)?.label || 'Other'}</Text>
+                                    <Text size="2" as='div' weight="medium" color='gray' style={{ marginTop: 5 }}>{APPOINTMENT_TYPES.find(type => type.value === appointment.appointmentType)?.label || 'Other'}</Text>
 
                                     {/* Agent */}
                                     <Text size="1" as='div' weight="bold" color='gray' style={{ marginTop: 20 }}>Agent</Text>

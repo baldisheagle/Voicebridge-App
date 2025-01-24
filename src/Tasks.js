@@ -70,12 +70,10 @@ export default function Tasks() {
         <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
           <Col>
             <Text size="2" weight="medium" as='div' style={{ color: 'var(--gray-11)' }}>
-
               {tasks.length === 0 ? "No tasks" : `${tasks.length} tasks`}
             </Text>
           </Col>
           <Col style={{ display: 'flex', justifyContent: 'flex-end' }}>
-
           </Col>
         </Row>
 

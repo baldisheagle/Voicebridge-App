@@ -3,15 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useRequireAuth } from './use-require-auth.js';
 import { useMediaQuery } from './shared-functions.js';
 import { Col, Row } from 'react-bootstrap';
-import { ThemeContext } from "./Theme.js";
-import { Button, DropdownMenu, Heading, Spinner, AlertDialog, Table, Dialog, VisuallyHidden, TextField } from '@radix-ui/themes';
+import { ThemeContext } from "./Theme.js";  
+import { Button, DropdownMenu, Heading, Spinner, Table, Text } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
-import { dbGetCalendars, dbDeleteCalendar, dbGetCampaigns, dbUpdateCalendarName, dbCreateCalendar } from './utilities/database.js';
-import { GoogleLogo, Plus, Pencil, Trash, Calendar, Stethoscope } from '@phosphor-icons/react';
+import { dbGetIntegrations, dbUpdateIntegration, dbCreateIntegration, dbDeleteIntegration } from './utilities/database.js';
+import { Plus, Pencil, Trash, Stethoscope } from '@phosphor-icons/react';
 import Moment from 'react-moment';
 import { v4 as uuidv4 } from 'uuid';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth as firebaseAuth } from './use-firebase.js';
 
 export default function Integrations() {
 
@@ -21,11 +19,7 @@ export default function Integrations() {
   const { theme } = useContext(ThemeContext);
   let isPageWide = useMediaQuery('(min-width: 960px)');
 
-  const [calendars, setCalendars] = useState([]);
-  const [ehr, setEhr] = useState([]);
-  const [calendarNameDialogOpen, setCalendarNameDialogOpen] = useState(false);
-  const [calendarId, setCalendarId] = useState(null);
-  const [calendarName, setCalendarName] = useState('');
+  const [integrations, setIntegrations] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,112 +30,71 @@ export default function Integrations() {
 
   // Initialize
   const initialize = async () => {
-    // TODO: Get calendars
-    dbGetCalendars(auth.workspace.id).then((calendars) => {
-      setCalendars(calendars);
+    // Get integrations
+    dbGetIntegrations(auth.workspace.id).then((integrations) => {
+      setIntegrations(integrations);
     }).catch((error) => {
-      console.error("Error getting calendars:", error);
-      toast.error("Error getting calendars, please try again");
+      console.error("Error getting integrations:", error);
+      toast.error("Error getting integrations, please try again");
     });
   }
 
-  // Delete calendar
-  const deleteCalendar = async (calendarId) => {
-    // TODO: Make sure the calendar is not in use by a campaign
-    dbGetCampaigns(auth.workspace.id).then((campaigns) => {
-      if (campaigns.some(campaign => campaign.calendarId === calendarId)) {
-        toast.error("Calendar is in use by a campaign");
-        return;
+  // Delete integration
+  const deleteIntegration = async (integrationId) => {
+    dbDeleteIntegration(integrationId, auth.workspace.id).then((success) => {
+      if (success) {
+        toast.success('Integration deleted');
+        setIntegrations(integrations.filter(integration => integration.id !== integrationId));
       } else {
-        dbDeleteCalendar(calendarId, auth.workspace.id).then((success) => {
-          if (success) {
-            toast.success("Calendar deleted");
-            setCalendars(calendars.filter(calendar => calendar.id !== calendarId));
-          } else {
-            toast.error("Error deleting calendar, please try again");
-          }
-        });
+        toast.error('Failed to delete integration');
       }
     });
   }
 
-  // Save calendar
-  const saveCalendar = async (name, provider, accessToken, refreshToken) => {
-    let calendar = {
+  // Save integration
+  const saveIntegration = async (name, provider, accessToken, refreshToken) => {
+    let integration = {
       id: uuidv4(),
       name: name,
       provider: provider,
       accessToken: accessToken,
-      refreshToken: refreshToken, // Store the refresh token
+      refreshToken: refreshToken,
       workspaceId: auth.workspace.id,
       createdBy: auth.user.uid,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    let result = await dbCreateCalendar(calendar);
+    let result = await dbCreateIntegration(integration);
     if (result) {
-      toast.success('Connected calendar!');
-      setCalendars([...calendars, calendar]);
+      toast.success('Connected integration!');
+      setIntegrations([...integrations, integration]);
     } else {
-      toast.error('Failed to connect calendar');
+      toast.error('Failed to connect integration');
     }
   }
 
-  // Update calendar name
-  const updateCalendarName = async (calendarId, name) => {
-    dbUpdateCalendarName(calendarId, name.trim(), auth.workspace.id).then((success) => {
+  // Update integration name
+  const updateIntegration = async (integration) => {
+    dbUpdateIntegration(integration).then((success) => {
       if (success) {
-        toast.success('Calendar name updated');
-        setCalendars(calendars.map(calendar => calendar.id === calendarId ? { ...calendar, name: name.trim() } : calendar));
-        setCalendarNameDialogOpen(false);
+        toast.success('Integration updated');
+        setIntegrations(integrations.map(integration => integration.id === integration.id ? integration : integration));
       } else {
-        toast.error('Failed to update calendar name');
+        toast.error('Failed to update integration');
       }
     });
   }
 
-  // Connect Google Calendar
-  const connectGoogleCalendar = () => {
-    const provider = new GoogleAuthProvider();
-    // Add all required scopes
-    provider.addScope('https://www.googleapis.com/auth/calendar.readonly');
-    provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly');
-
-    // Force consent screen to always appear and request offline access
-    provider.setCustomParameters({
-      access_type: 'offline',
-      prompt: 'consent select_account'
-    });
-
-    signInWithPopup(firebaseAuth, provider).then((result) => {
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const accessToken = credential.accessToken;
-      // Get refresh token from the user object
-      const refreshToken = result.user.refreshToken;
-
-      console.log("Google Calendar connected");
-      saveCalendar('Google', 'google', accessToken, refreshToken);
-    }).catch((error) => {
-      console.error("Error connecting Google Calendar:", error);
-      toast.error("Error connecting Google Calendar");
-    });
-  }
-  
-  const connectCalendar = (provider) => {
-    // TODO: Connect calendar
-    toast.error("Coming soon");
-  }
-
-  // Connect calendly
-  // const connectCalendly = () => {
-  //   // TODO: Switch to production credentials
-  //   const authUrl = `https://auth.calendly.com/oauth/authorize?client_id=${process.env.REACT_APP_CALENDLY_CLIENT_ID}&response_type=code&redirect_uri=${process.env.REACT_APP_CALENDLY_REDIRECT_URI_SANDBOX}`;
-  //   window.location.href = authUrl;
-  // }
-
-  const connectEHR = (system) => {
-    // TODO: Connect EHR
-    toast.error("Coming soon");
+  const connectIntegration = (provider) => {
+    // TODO: Connect integration
+    // toast.error("Coming soon");
+    if (provider === 'athena') {
+      window.location.href = `https://api.preview.platform.athenahealth.com/oauth2/v1/authorize?response_type=code&client_id=${process.env.REACT_APP_ATHENA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_ATHENA_REDIRECT_URI}&scope=appointments`;
+    } else if (provider === 'drchrono') {
+      window.location.href = `https://drchrono.com/o/authorize/?redirect_uri=${process.env.REACT_APP_DRCHRONO_REDIRECT_URI}&response_type=code&client_id=${process.env.REACT_APP_DRCHRONO_CLIENT_ID}`;
+    } else if (provider === 'epic') {
+      window.location.href = `https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize?response_type=code&client_id=${process.env.REACT_APP_EPIC_CLIENT_ID_NON_PROD}&redirect_uri=${process.env.REACT_APP_EPIC_REDIRECT_URI}`;
+    }
   }
 
 
@@ -162,111 +115,31 @@ export default function Integrations() {
 
       <div style={{ position: 'relative', top: 10, width: '100%', paddingRight: 10, overflow: 'auto', height: 'calc(100vh - 40px)' }}>
 
-        {/* Calendars */}
-        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0 }}>
-          <Heading size='3' as='div' style={{ marginRight: 10, marginBottom: 0 }}>Calendars</Heading>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant="solid" size="2"><Plus /> Connect</Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              {/* <DropdownMenu.Item onClick={() => connectCalendly()}>Calendly</DropdownMenu.Item> */}
-              <DropdownMenu.Item onClick={() => connectGoogleCalendar()}><GoogleLogo /> Google Calendar</DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => connectCalendar('calcom')} disabled><Calendar /> Cal.com</DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+          <Col>
+            <Text size="2" weight="medium" as='div' style={{ color: 'var(--gray-11)' }}>
+              {integrations.length === 0 ? "No integrations" : `${integrations.length} integrations`}
+            </Text>
+          </Col>
+          <Col style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="solid" size="2"><Plus /> Connect</Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item onClick={() => connectIntegration('athena')}><Stethoscope /> Athena Health</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('drchrono')}><Stethoscope /> DrChrono</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('epic')}><Stethoscope /> Epic</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('cerner')} disabled><Stethoscope /> Cerner</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('athena')} disabled><Stethoscope /> Athena Health</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('eclinicalworks')} disabled><Stethoscope /> eClinicalWorks</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => connectIntegration('nextgen')} disabled><Stethoscope /> NextGen Healthcare</DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Col>
         </Row>
 
-        {/* Calendars */}
-        {calendars.length > 0 && (
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Provider</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Actions</Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-
-              {calendars.map((calendar, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell>{calendar.name}</Table.Cell>
-                  <Table.Cell>{calendar.provider}</Table.Cell>
-                  <Table.Cell><Moment format="DD MMM YYYY">{calendar.createdAt}</Moment></Table.Cell>
-                  <Table.Cell>
-                    {/* Edit calendar */}
-                    <Button variant="ghost" size="3" color="gray" style={{ marginRight: 5 }} onClick={() => { setCalendarId(calendar.id); setCalendarName(calendar.name); setCalendarNameDialogOpen(true); }}><Pencil /></Button>
-                    <Dialog.Root open={calendarNameDialogOpen} onOpenChange={setCalendarNameDialogOpen}>
-                      <Dialog.Content maxWidth="450px">
-                        <Dialog.Title>Edit name</Dialog.Title>
-                        <VisuallyHidden>
-                          <Dialog.Description size="2">
-                            Edit the name of the calendar
-                          </Dialog.Description>
-                        </VisuallyHidden>
-                        <TextField.Root variant="outline" value={calendarName} onChange={(e) => setCalendarName(e.target.value.length > 0 ? e.target.value : 'No name')} />
-                        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 20 }}>
-                          <Button variant="solid" color="gray">Cancel</Button>
-                          <Button variant="solid" onClick={() => {
-                            updateCalendarName(calendarId, calendarName);
-                            setCalendarNameDialogOpen(false);
-                          }}>Save</Button>
-                        </Row>
-                      </Dialog.Content>
-                    </Dialog.Root>
-                    {/* Delete calendar */}
-                    <AlertDialog.Root>
-                      <AlertDialog.Trigger>
-                        <Button variant="ghost" size="3" color="red"><Trash /></Button>
-                      </AlertDialog.Trigger>
-                      <AlertDialog.Content maxWidth="450px">
-                        <AlertDialog.Title>Delete {calendar.name}</AlertDialog.Title>
-                        <AlertDialog.Description size="2">
-                          Are you sure you want to delete this calendar?
-                        </AlertDialog.Description>
-
-                        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
-                          <AlertDialog.Cancel>
-                            <Button variant="solid" color="gray">
-                              Cancel
-                            </Button>
-                          </AlertDialog.Cancel>
-                          <AlertDialog.Action>
-                            <Button variant="solid" color="red" onClick={() => deleteCalendar(calendar.id)}>
-                              Delete
-                            </Button>
-                          </AlertDialog.Action>
-                        </Row>
-                      </AlertDialog.Content>
-                    </AlertDialog.Root>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-
-            </Table.Body>
-          </Table.Root>
-        )}
-
-        {/* EHR */}
-        <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 40 }}>
-          <Heading size='3' as='div' style={{ marginRight: 10, marginBottom: 0, marginRight: 20 }}>EHR</Heading>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant="solid" size="2"><Plus /> Connect</Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Item onClick={() => connectEHR('epic')} disabled><Stethoscope /> Epic</DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => connectEHR('cerner')} disabled><Stethoscope /> Cerner</DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => connectEHR('athena')} disabled><Stethoscope /> Athena Health</DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => connectEHR('eclinicalworks')} disabled><Stethoscope /> eClinicalWorks</DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => connectEHR('nextgen')} disabled><Stethoscope /> NextGen Healthcare</DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </Row>
-
+        {integrations.length > 0 && (
         <Table.Root>
           <Table.Header>
             <Table.Row>
@@ -279,18 +152,20 @@ export default function Integrations() {
 
           <Table.Body>
 
-            {ehr.map((ehr, index) => (
+            {integrations.map((integration, index) => (
               <Table.Row key={index}>
-                <Table.Cell>{ehr.name}</Table.Cell>
-                <Table.Cell>{ehr.provider}</Table.Cell>
-                <Table.Cell><Moment format="DD MMM YYYY">{ehr.createdAt}</Moment></Table.Cell>
+                <Table.Cell>{integration.name}</Table.Cell>
+                <Table.Cell>{integration.provider}</Table.Cell>
+                <Table.Cell><Moment format="DD MMM YYYY">{integration.createdAt}</Moment></Table.Cell>
                 <Table.Cell>
-
+                  <Button variant="ghost" size="3" color="gray" style={{ marginRight: 5 }}><Pencil /></Button>
+                  <Button variant="ghost" size="3" color="red"><Trash /></Button>
                 </Table.Cell>
               </Table.Row>
             ))}
-          </Table.Body>
-        </Table.Root>
+            </Table.Body>
+          </Table.Root>
+        )}
 
       </div>
 

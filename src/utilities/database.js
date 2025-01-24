@@ -283,3 +283,52 @@ export const dbUpdateAgent = async(agent) => {
     return false;
   }
 }
+
+// Get integrations
+export const dbGetIntegrations = async(workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "integrations"), where("workspaceId", "==", workspaceId)));
+    const _integrations = snapshot.docs.map((doc) => doc.data());
+    return _integrations;
+  } catch (error) {
+    console.error("Error fetching integrations:", error);
+    return [];
+  }
+}
+
+// Create integration
+export const dbCreateIntegration = async(integration) => {
+  try {
+    const docRef = await addDoc(collection(db, "integrations"), integration);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating integration:", error);
+    return null;
+  }
+}
+
+// Update integration
+export const dbUpdateIntegration = async(integration) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "integrations"), where("id", "==", integration.id), where("workspaceId", "==", integration.workspaceId), limit(1)));
+    const docRef = snapshot.docs[0].ref;
+    await setDoc(docRef, integration);
+    return true;
+  } catch (error) {
+    console.error("Error updating integration:", error);
+    return false;
+  }
+}
+
+// Delete integration
+export const dbDeleteIntegration = async(integrationId, workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "integrations"), where("id", "==", integrationId), where("workspaceId", "==", workspaceId), limit(1)));
+    const docRef = snapshot.docs[0].ref;
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error("Error deleting integration:", error);
+    return false;
+  }
+}

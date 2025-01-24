@@ -127,7 +127,7 @@ export default function Appointments() {
   return (
     <div style={{ width: '100%', minHeight: '100vh', paddingTop: 10, paddingLeft: 10, paddingBottom: 10 }}>
 
-      {isPageWide ? <Heading size='4'>{greeting()}{auth.user.full_name ? ', ' + getFirstName(auth.user.full_name) : ''}</Heading> : <Heading size='4'>Appointments</Heading>}
+      <Heading size='4'>Appointments</Heading>
 
       <div style={{ position: 'relative', top: 10, width: '100%', paddingRight: 10, overflow: 'auto', height: 'calc(100vh - 40px)' }}>
 

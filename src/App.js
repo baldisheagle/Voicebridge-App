@@ -26,6 +26,9 @@ import Integrations from './Integrations.js';
 import Profile from './components/common/Profile.js';
 import SidebarComponent from './components/common/Sidebar.js';
 import CalendlyConnect from './pages/integrations/CalendlyConnect.js';
+import AthenaConnect from './pages/integrations/AthenaConnect.js';
+import DrChronoConnect from './pages/integrations/DrChronoConnect.js';
+import EpicConnect from './pages/integrations/EpicConnect.js';
 
 export default function App() {
 
@@ -53,6 +56,10 @@ export default function App() {
                   <Route path="/team" element={<Team />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/integrations" element={<Integrations />} />
+                  {/* Integrations */}
+                  <Route path="/integrations/athena" element={<AthenaConnect />} />
+                  <Route path="/integrations/drchrono" element={<DrChronoConnect />} />
+                  <Route path="/integrations/epic" element={<EpicConnect />} />
                   {/* Settings */}
                   <Route path="/settings" element={<Settings />} />
                   {/* Calendly */}
