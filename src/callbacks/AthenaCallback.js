@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRequireAuth } from '../../use-require-auth.js';
-import { dbCreateCalendar } from '../../utilities/database.js';
+import { useRequireAuth } from '../use-require-auth.js';
+import { dbCreateIntegration } from '../utilities/database.js';
 import toast, { Toaster } from 'react-hot-toast';
 import { Row, Col } from 'react-bootstrap';
 import { Spinner } from '@radix-ui/themes';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function CalendlyConnect() {
+export default function AthenaCallback() {
 
   const auth = useRequireAuth();
   const navigate = useNavigate();
@@ -27,16 +27,16 @@ export default function CalendlyConnect() {
 
   const fetchAccessToken = async (code) => {
     try {
-      const response = await fetch("https://auth.calendly.com/oauth/token", {
+      const response = await fetch('https://api.preview.platform.athenahealth.com/oauth2/v1/token', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           grant_type: "authorization_code",
-          client_id: process.env.REACT_APP_CALENDLY_CLIENT_ID,
-          client_secret: process.env.REACT_APP_CALENDLY_CLIENT_SECRET,
-          redirect_uri: process.env.REACT_APP_CALENDLY_REDIRECT_URI_SANDBOX,
+          client_id: process.env.REACT_APP_ATHENA_CLIENT_ID,
+          client_secret: process.env.REACT_APP_ATHENA_CLIENT_SECRET,
+          redirect_uri: process.env.REACT_APP_ATHENA_REDIRECT_URI,
           code,
         }),
       });
@@ -45,8 +45,10 @@ export default function CalendlyConnect() {
 
       const data = await response.json();
 
-      // Save calendar
-      saveCalendar(data.access_token);
+
+      console.log(data);
+      // Save integration
+      // saveIntegration(data.access_token);
     
     } catch (error) {
       console.error("Error fetchi`ng access token:", error);
@@ -54,23 +56,23 @@ export default function CalendlyConnect() {
   };
 
 
-  const saveCalendar = async(accessToken) => {
-    let calendar = {
+  const saveIntegration = async(accessToken) => {
+    let integration = {
       id: uuidv4(),
-      name: 'Calendly',
-      type: 'calendly',
+      name: 'Athena Health',
+      type: 'athena',
       accessToken: accessToken,
       workspaceId: auth.workspace.id,
       createdBy: auth.user.uid,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    let result = await dbCreateCalendar(calendar);
+    let result = await dbCreateIntegration(integration);
     if (result) {
-      toast.success('Connected to Calendly');
+      toast.success('Connected to Athena Health');
       navigate('/integrations');
     } else {
-      toast.error('Failed to connect to Calendly');
+      toast.error('Failed to connect to Athena Health');
       navigate('/integrations');
     }
   }

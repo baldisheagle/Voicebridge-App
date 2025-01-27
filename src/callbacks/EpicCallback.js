@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRequireAuth } from '../../use-require-auth.js';
-import { dbCreateIntegration } from '../../utilities/database.js';
+import { useRequireAuth } from '../use-require-auth.js';
+import { dbCreateIntegration } from '../utilities/database.js';
 import toast, { Toaster } from 'react-hot-toast';
 import { Row, Col } from 'react-bootstrap';
 import { Spinner } from '@radix-ui/themes';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function DrChronoConnect() {
+export default function EpicCallback() {
 
   const auth = useRequireAuth();
   const navigate = useNavigate();
@@ -21,13 +21,14 @@ export default function DrChronoConnect() {
       navigate('/integrations');
     }
     if (auth && auth.user && auth.workspace && code) {
+      console.log('EpicConnect', code);
       fetchAccessToken(code);
     }
   }, [code, auth]);
 
   const fetchAccessToken = async (code) => {
     try {
-      const response = await fetch('http://localhost:5001/voicebridge-app/us-central1/getAppointmentsFromDrChrono', {
+      const response = await fetch('http://127.0.0.1:5001/voicebridge-app/us-central1/getAccessTokenFromEpic', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,8 +55,8 @@ export default function DrChronoConnect() {
   const saveIntegration = async(accessToken, refreshToken) => {
     let integration = {
       id: uuidv4(),
-      name: 'DrChrono',
-      provider: 'drchrono',
+      name: 'Epic',
+      provider: 'epic',
       accessToken: accessToken,
       refreshToken: refreshToken,
       workspaceId: auth.workspace.id,
@@ -65,10 +66,10 @@ export default function DrChronoConnect() {
     }
     let result = await dbCreateIntegration(integration);
     if (result) {
-      toast.success('Connected to DrChrono');
+      toast.success('Connected to Epic');
       navigate('/integrations');
     } else {
-      toast.error('Failed to connect to DrChrono');
+      toast.error('Failed to connect to Epic');
       navigate('/integrations');
     }
   }

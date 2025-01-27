@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRequireAuth } from '../../use-require-auth.js';
-import { dbCreateIntegration } from '../../utilities/database.js';
+import { useRequireAuth } from '../use-require-auth.js';
+import { dbCreateCalendar } from '../utilities/database.js';
 import toast, { Toaster } from 'react-hot-toast';
 import { Row, Col } from 'react-bootstrap';
 import { Spinner } from '@radix-ui/themes';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function EpicConnect() {
+export default function DrChronoCallback() {
 
   const auth = useRequireAuth();
   const navigate = useNavigate();
@@ -18,17 +18,16 @@ export default function EpicConnect() {
 
   useEffect(() => {
     if (!code) {
-      navigate('/integrations');
+      navigate('/calendars');
     }
     if (auth && auth.user && auth.workspace && code) {
-      console.log('EpicConnect', code);
       fetchAccessToken(code);
     }
   }, [code, auth]);
 
   const fetchAccessToken = async (code) => {
     try {
-      const response = await fetch('http://localhost:5001/voicebridge-app/us-central1/getAppointmentsFromEpic', {
+      const response = await fetch('http://localhost:5001/voicebridge-app/us-central1/getAccessTokenFromDrChrono', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,9 +41,8 @@ export default function EpicConnect() {
 
       const data = await response.json();
 
-      // console.log(data);
       // Save integration
-      saveIntegration(data.access_token, data.refresh_token);
+      saveCalendar(data.access_token, data.refresh_token);
     
     } catch (error) {
       console.error("Error fetchi`ng access token:", error);
@@ -52,11 +50,11 @@ export default function EpicConnect() {
   };
 
 
-  const saveIntegration = async(accessToken, refreshToken) => {
-    let integration = {
+  const saveCalendar = async(accessToken, refreshToken) => {
+    let calendar = {
       id: uuidv4(),
-      name: 'Epic',
-      provider: 'epic',
+      name: 'DrChrono',
+      provider: 'drchrono',
       accessToken: accessToken,
       refreshToken: refreshToken,
       workspaceId: auth.workspace.id,
@@ -64,13 +62,13 @@ export default function EpicConnect() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    let result = await dbCreateIntegration(integration);
+    let result = await dbCreateCalendar(calendar);
     if (result) {
-      toast.success('Connected to Epic');
-      navigate('/integrations');
+      toast.success('Connected to DrChrono');
+      navigate('/calendars');
     } else {
-      toast.error('Failed to connect to Epic');
-      navigate('/integrations');
+      toast.error('Failed to connect to DrChrono');
+      navigate('/calendars');
     }
   }
 

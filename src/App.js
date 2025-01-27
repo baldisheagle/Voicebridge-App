@@ -18,17 +18,17 @@ import NotFound from "./NotFound.js";
 import Campaigns from "./Campaigns.js";
 import Campaign from "./Campaign.js";
 import Tasks from "./Tasks.js";
-import Agents from "./Agents.js";
+import AllAgents from "./AllAgents.js";
 import Team from "./Team.js";
 import Settings from './Settings.js';
 import Appointments from './Appointments.js';
-import Integrations from './Integrations.js';
+import Calendars from './Calendars.js';
 import Profile from './components/common/Profile.js';
 import SidebarComponent from './components/common/Sidebar.js';
-import CalendlyConnect from './pages/integrations/CalendlyConnect.js';
-import AthenaConnect from './pages/integrations/AthenaConnect.js';
-import DrChronoConnect from './pages/integrations/DrChronoConnect.js';
-import EpicConnect from './pages/integrations/EpicConnect.js';
+import CalendlyConnect from './callbacks/CalendlyCallback.js';
+import AthenaConnect from './callbacks/AthenaCallback.js';
+import DrChronoConnect from './callbacks/DrChronoCallback.js';
+import EpicConnect from './callbacks/EpicCallback.js';
 
 export default function App() {
 
@@ -49,17 +49,17 @@ export default function App() {
                 <Routes>
                   {/* Main */}
                   <Route path="/appointments" element={<Appointments />} />
-                  <Route path="/agents" element={<Agents />} />
+                  <Route path="/calendars" element={<Calendars />} />
+                  <Route path="/agents" element={<AllAgents />} />
                   <Route path="/campaigns" element={<Campaigns />} />
                   <Route path="/campaign/:campaignId" element={<Campaign />} />
                   {/* <Route path="/logs" element={<Logs />} /> */}
                   <Route path="/team" element={<Team />} />
                   <Route path="/tasks" element={<Tasks />} />
-                  <Route path="/integrations" element={<Integrations />} />
                   {/* Integrations */}
-                  <Route path="/integrations/athena" element={<AthenaConnect />} />
-                  <Route path="/integrations/drchrono" element={<DrChronoConnect />} />
-                  <Route path="/integrations/epic" element={<EpicConnect />} />
+                  <Route path="/callbacks/athena" element={<AthenaConnect />} />
+                  <Route path="/callbacks/drchrono" element={<DrChronoConnect />} />
+                  <Route path="/callbacks/epic" element={<EpicConnect />} />
                   {/* Settings */}
                   <Route path="/settings" element={<Settings />} />
                   {/* Calendly */}

@@ -47,23 +47,23 @@ const corsOptions = {
 const corsMiddleware = cors(corsOptions);
 
 /*
-  Function: Get appointments from Epic
+  Function: Get access token from Epic
   Parameters:
+    code
+  Return:
     accessToken
     refreshToken
-    calendarDocRef
-  Return:
-    appointments
 */
 
-exports.getAppointmentsFromEpic = onRequest((req, res) => {
-  console.log('Getting appointments from Epic', req.body);
+exports.getAccessTokenFromEpic = onRequest((req, res) => {
+  console.log('Getting access token from Epic', req.body);
   console.log('Epic client ID:', process.env.REACT_APP_EPIC_CLIENT_ID_NON_PROD);
   console.log('Epic client secret:', process.env.REACT_APP_EPIC_CLIENT_SECRET);
   console.log('Epic redirect URI:', process.env.REACT_APP_EPIC_REDIRECT_URI);
   corsMiddleware(req, res, async () => {
+    
     const code = req.body.code;
-    console.log('Epic code:', req.body.code);
+    
     try {
 
       const response = await fetch('https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token', {
@@ -112,17 +112,15 @@ exports.getAppointmentsFromEpic = onRequest((req, res) => {
 });
 
 /*
-  Function: Get appointments from DrChrono
+  Function: Get access token from DrChrono
   Parameters:
-    accessToken
-    refreshToken
-    calendarDocRef
+    code
   Return:
     appointments
 */
 
-exports.getAppointmentsFromDrChrono = onRequest((req, res) => {
-  console.log('Getting appointments from DrChrono', req.body);
+exports.getAccessTokenFromDrChrono = onRequest((req, res) => {
+  console.log('Getting access token from DrChrono', req.body);
   corsMiddleware(req, res, async () => {
     const code = req.body.code;
     try {
@@ -172,7 +170,7 @@ exports.getAppointmentsFromDrChrono = onRequest((req, res) => {
 });
 
 /*
-  Scheduled: Pull in appointments from Google Calendar
+  Scheduled: Pull in events from Google Calendar
 */
 
 exports.getEventsFromCalendar = onSchedule('every 5 minutes', async () => { // 0 * * * *

@@ -98,7 +98,7 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>The name of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <TextField.Root variant="outline" placeholder="Example" value={name} onChange={(e) => setName(e.target.value)} />
+          <TextField.Root variant="surface" placeholder="Example" value={name} onChange={(e) => setName(e.target.value)} />
         </Col>
       </Row>
 
@@ -109,7 +109,7 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>A short description of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <TextArea variant="outline" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <TextArea variant="surface" rows={8} value={description} onChange={(e) => setDescription(e.target.value)} />
         </Col>
       </Row>
 
@@ -120,7 +120,7 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>The website of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <TextField.Root variant="outline" placeholder="https://www.example.com" type="url" value={website} onChange={(e) => setWebsite(e.target.value)} />
+          <TextField.Root variant="surface" placeholder="https://www.example.com" type="url" value={website} onChange={(e) => setWebsite(e.target.value)} />
         </Col>
       </Row>
 
@@ -131,7 +131,7 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>The location of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <TextField.Root variant="outline" placeholder="123 Main St, New York, NY 10001" value={location} onChange={(e) => setLocation(e.target.value)} />
+          <TextField.Root variant="surface" placeholder="123 Main St, New York, NY 10001" value={location} onChange={(e) => setLocation(e.target.value)} />
         </Col>
       </Row>
 
@@ -142,7 +142,7 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>The phone number of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <TextField.Root variant="outline" placeholder="123-456-7890" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+          <TextField.Root variant="surface" placeholder="123-456-7890" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
         </Col>
       </Row>
 
@@ -153,8 +153,8 @@ export default function BusinessProfile() {
           <Text size="1" as='div' color='gray'>The timezone of your business.</Text>
         </Col>
         <Col xs={12} sm={12} md={6} lg={5} xl={4} style={{ padding: 0, paddingLeft: 10 }}>
-          <Select.Root variant="outline" value={timezone} onValueChange={(value) => setTimezone(value)}>
-            <Select.Trigger placeholder="Select a timezone" />
+          <Select.Root value={timezone} onValueChange={(value) => setTimezone(value)}>
+            <Select.Trigger variant="surface" color="gray" placeholder="Select a timezone" />
             <Select.Content>
               {TIMEZONE_OFFSETS.map((option) => (
                 <Select.Item key={option.value} value={option.value}>{option.label}</Select.Item>
@@ -180,8 +180,8 @@ export default function BusinessProfile() {
               </Row>
 
               <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 5 }}>
-                <Select.Root variant="outline" size="2" value={businessHours[day].open} onValueChange={(value) => setBusinessHours({ ...businessHours, [day]: { ...businessHours[day], open: value } })} disabled={!businessHours[day].isOpen}>
-                  <Select.Trigger placeholder="Select" style={{ width: `calc(50% - 20px)` }} />
+                <Select.Root size="2" value={businessHours[day].open} onValueChange={(value) => setBusinessHours({ ...businessHours, [day]: { ...businessHours[day], open: value } })} disabled={!businessHours[day].isOpen}>
+                  <Select.Trigger variant="surface" color="gray" placeholder="Select" style={{ width: `calc(50% - 20px)` }} />
                   <Select.Content>
                     {HOURS.map((option) => (
                       <Select.Item key={option.value} value={option.value}>{option.label}</Select.Item>

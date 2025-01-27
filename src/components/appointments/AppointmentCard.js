@@ -3,11 +3,11 @@ import { Card, Col, Row } from 'react-bootstrap';
 import { Text, Badge, Button, Dialog, Select, TextField, IconButton } from '@radix-ui/themes';
 import Moment from 'react-moment';
 import { CaretCircleDown, CaretCircleUp, CaretDown, CaretUp, Circle, List, Pencil, Play } from '@phosphor-icons/react';
-import { APPOINTMENT_TYPES } from '../config/lists.js';
-import { formatPhoneNumber } from '../helpers/string.js';
+import { APPOINTMENT_TYPES } from '../../config/lists.js';
+import { formatPhoneNumber } from '../../helpers/string.js';
 import { toast } from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { dbCreateTask, dbGetTasksByAppointmentId } from '../utilities/database.js';
+import { dbCreateTask, dbGetTasksByAppointmentId } from '../../utilities/database.js';
 
 const AppointmentCard = ({
     auth,

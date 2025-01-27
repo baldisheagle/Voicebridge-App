@@ -4,7 +4,7 @@ import { Col } from 'react-bootstrap';
 import Logo from "./Logo.js";
 import { useMediaQuery } from "../../helpers/dom.js";
 import { Sidebar, Menu, MenuItem, menuClasses } from 'react-pro-sidebar';
-import { Gear, Calendar, Users, Link, Play  } from "@phosphor-icons/react";
+import { Gear, Calendar, Users, Link, Play, UserCirclePlus  } from "@phosphor-icons/react";
 
 export default function SidebarComponent(props) {
 
@@ -104,7 +104,7 @@ export default function SidebarComponent(props) {
               <MenuItem 
                 label="Appointments"
                 active={location.pathname === '/appointments' ? true : false} 
-                icon={<Calendar size={15} weight="bold" />}
+                icon={<UserCirclePlus size={15} weight="bold" />}
                 rootStyles={{
                   ['.' + menuClasses.button]: {
                     marginBottom: '0px',
@@ -113,7 +113,7 @@ export default function SidebarComponent(props) {
                 onClick={() => navigate("/appointments")}>Appointments
               </MenuItem>
 
-              <MenuItem 
+              {/* <MenuItem 
                 label="Tasks"
                 active={location.pathname === '/tasks' ? true : false} 
                 icon={<Play size={15} weight="bold" />}
@@ -123,7 +123,7 @@ export default function SidebarComponent(props) {
                   },
                 }}
                 onClick={() => navigate("/tasks")}>Tasks
-              </MenuItem>
+              </MenuItem> */}
 
               <MenuItem 
                 label="Agents"
@@ -174,15 +174,15 @@ export default function SidebarComponent(props) {
               </MenuItem>
 
               <MenuItem 
-                label="Integrations"
-                active={location.pathname === '/integrations' ? true : false} 
-                icon={<Link size={15} weight="bold" />}
+                label="Calendars"
+                active={location.pathname === '/calendars' ? true : false} 
+                icon={<Calendar size={15} weight="bold" />}
                 rootStyles={{
                   ['.' + menuClasses.button]: {
                     marginBottom: '0px',
                   },
                 }}
-                onClick={() => navigate("/integrations")}>Integrations
+                onClick={() => navigate("/calendars")}>Calendars
               </MenuItem>
 
               <MenuItem 

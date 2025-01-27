@@ -7,7 +7,7 @@ import { ThemeContext } from "./Theme.js";
 import { Text, Heading, Spinner, Card, Badge, Button, Dialog, Switch, IconButton, VisuallyHidden, TextField, Select, TextArea } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
 import { AGENTS } from './config/agents.js';
-import { Pencil, Plus } from '@phosphor-icons/react';
+import { Chat, Pencil, Phone, Plus } from '@phosphor-icons/react';
 import { DEFAULT_PHONE_NUMBERS, LANGUAGES } from './config/lists.js';
 import { dbCreateAgent, dbGetAgents, dbUpdateAgent } from './utilities/database.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -156,11 +156,14 @@ export default function Agents() {
               <Dialog.Content style={{ width: '100%' }}>
                 <Dialog.Title style={{ marginBottom: 0 }}>New agent</Dialog.Title>
                 <Dialog.Description size="2">Select a agent template</Dialog.Description>
-                <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+                <Row style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
                   {AGENTS.length > 0 && AGENTS.map((agent, index) => (
                     <Col key={index} xs={12} sm={12} md={12} lg={6} xl={6} style={{ padding: 5 }}>
                       <Card>
-                        {agent.icon}
+                        <Row style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', marginLeft: 0, marginRight: 0, marginTop: 10 }}>
+                          {agent.icon}
+                          {agent.mode === 'Phone' ? <Phone size={22} style={{ marginLeft: 10 }} /> : agent.mode === 'SMS' ? <Chat size={22} style={{ marginLeft: 10 }} /> : ''}
+                        </Row>
                         <Heading size="3" as='div' color='gray' style={{ marginTop: 10, marginBottom: 2 }}>{agent.name}</Heading>
                         <Badge size="1" style={{ color: 'var(--gray-11)' }}>{agent.mode}</Badge>
                         <Text size="1" as='div' color='gray' style={{ marginTop: 5 }}>{agent.description}</Text>

@@ -257,6 +257,18 @@ export const dbGetAgents = async(workspaceId) => {
   }
 }
 
+// Get agent
+export const dbGetAgent = async(agentId, workspaceId) => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "agents"), where("id", "==", agentId), where("workspaceId", "==", workspaceId), limit(1)));
+    const _agent = snapshot.docs.map((doc) => doc.data());
+    return _agent[0];
+  } catch (error) {
+    console.error("Error fetching agent:", error);
+    return null;
+  }
+}
+
 // Create agent
 export const dbCreateAgent = async(agent) => {
   try {

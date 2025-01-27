@@ -7,7 +7,7 @@ import { ThemeContext } from "./Theme.js";
 import { Heading, Spinner, TabNav, Text } from '@radix-ui/themes';
 import toast, { Toaster } from 'react-hot-toast';
 import PhoneNumbers from './components/settings/PhoneNumbers.js';
-// import Calendars from './components/settings/Calendars.js';
+import Calendar from './components/settings/Calendar.js';
 import Billing from './components/settings/Billing.js';
 import BusinessProfile from './components/settings/BusinessProfile.js';
 
@@ -57,9 +57,9 @@ export default function Settings() {
           <TabNav.Link href="#" active={activeTab === 'phoneNumbers'} onClick={() => setActiveTab('phoneNumbers')}>
             Phone numbers
           </TabNav.Link>
-          {/* <TabNav.Link href="#" active={activeTab === 'calendars'} onClick={() => setActiveTab('calendars')}>
-            Calendars
-          </TabNav.Link> */}
+          <TabNav.Link href="#" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')}>
+            Calendar
+          </TabNav.Link>
           <TabNav.Link href="#" active={activeTab === 'billing'} onClick={() => setActiveTab('billing')}>
             Billing
           </TabNav.Link>
@@ -74,9 +74,9 @@ export default function Settings() {
         {activeTab === 'phoneNumbers' && (
           <PhoneNumbers />
         )}
-        {/* {activeTab === 'calendars' && (
-          <Calendars />
-        )} */}
+        {activeTab === 'calendar' && (
+          <Calendar />
+        )}
         {activeTab === 'billing' && (
           <Billing />
         )}
